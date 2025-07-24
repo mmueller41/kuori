@@ -17,7 +17,7 @@ Currently, Kuori is just a simple python library. As such, it can be interactive
 
 ### Connecting to EalánOS
 To connect to a running instance of EalánOS, you can use the following code
-```
+```python
 shell = kuori.Kuori(hostname, port)
 ```
 where `hostname` and `port` refer to the hostname (or IP address) of the host running EalánOS and `port` to the TCP port that is used by the 
