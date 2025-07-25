@@ -4,6 +4,7 @@ import socket
 from rich.console import Console
 from rich.table import Table
 from rich import box
+from rich.syntax import Syntax
 
 class Connection:
     accept = 0
@@ -77,7 +78,7 @@ class Kuori:
         for node in config.findall('.//start[@name="%s"]'%name):
             config.remove(node)
 
-        self.commit()
+        self.commit(config)
 
     def find_start_node(self, name):
         config = self.begin()
