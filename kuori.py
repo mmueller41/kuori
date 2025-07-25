@@ -135,3 +135,10 @@ class Kuori:
                     affinity
             )
         console.print(table)
+
+    def print_config(self):
+        cfg = self.begin()
+        xml = ET.tostring(cfg).decode("UTF-8")
+        syntax = Syntax(xml, "xml")
+        console = Console()
+        console.print(syntax)
