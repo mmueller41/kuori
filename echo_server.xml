@@ -1,0 +1,19 @@
+<start name="echo_server" caps="100000">
+    <binary name="blinktree_daemon"/>
+	<resource name="RAM" quantum="200G"/>
+		<config dhcp="true">
+		<vfs> <dir name="dev">
+			<log/>
+			<inline name="rtc">2022-07-20 14:30</inline> 
+		</dir>
+		</vfs>
+		<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc"/>
+	</config>
+    <route>
+		<service name="Timer"><child name="timer"/></service>
+		<service name="Nic"><child name="nic_router"/></service>
+        <service name="ROM" label_suffix=".lib.so"><parent/></service>
+        <service name="ROM" label_last="blinktree_daemon"> <child name="cached_fs_rom"/></service>
+        <any-service><parent/></any-service>
+    </route>
+</start>
