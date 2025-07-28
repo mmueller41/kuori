@@ -1,0 +1,69 @@
+from picle import App
+from typing import Any, List, Union, Optional
+from pydantic import BaseModel, Field, StrictStr
+from kuori.kuori import Kuori
+
+hostname = "naxos.inf.uos.de"
+port = 18080
+
+class model_show(BaseModel):
+    version: Any = Field(
+        None,
+        description="Show software version",
+        json_schema_extra={"function": "show_version"},
+    )
+    habitat: Any = Field(
+        None,
+        description="Show status of habitat",
+        json_schema_extra={"function": "show_habitat"},
+    )
+
+    @staticmethod
+    def show_version():
+        return "0.1.0"
+
+    @staticmethod
+    def show_habitat():
+        shell = Kuori(hostname, port)
+        shell.list()
+        return ""
+
+class model_launch(BaseModel):
+    cells: Union[StrictStr, List[StrictStr]] = Field(..., description="Config file(s) for cell(s)", required=True)
+
+    @staticmethod
+    def run(**kwargs):
+        if type(kwargs['cells']) is list:
+            for xml in kwargs['cells']:
+                print(xml)
+        else:
+            return kwargs['cells']
+        
+class model_kill(BaseModel):
+    cells: Union[StrictStr, List[StrictStr]] = Field(..., description="Cells to destroy", required=True)
+
+    @staticmethod
+    def run(**kwargs):
+        cells = kwargs['cells']
+        if (type(cells)) is list:
+            for cell in cells:
+                shell = Kuori(hostname, port)
+                shell.kill(cell)
+        else:
+            print("Killing cell ", cells)
+            shell = Kuori(hostname, port)
+            shell.kill(cells)
+
+class Root(BaseModel):
+    show: model_show = Field(None, description="Show commands")
+    launch: model_launch = Field(None, description="Launch new cells")
+    kill: model_kill = Field(None, description="Destroy cells")
+
+    class PicleConfig:
+        prompt = "kuori@%s:%d> "%(hostname, port)
+        intro = "Kuori Remote Command Shell"
+
+
+if __name__ == "__main__":
+    shell = App(Root)
+    shell.start()
