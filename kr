@@ -2,9 +2,10 @@ from picle import App
 from typing import Any, List, Union, Optional
 from pydantic import BaseModel, Field, StrictStr
 from kuori.kuori import Kuori
+import typer
 
-hostname = "naxos.inf.uos.de"
-port = 18080
+hostname = ""
+port = 0
 
 class model_show(BaseModel):
     version: Any = Field(
@@ -30,6 +31,7 @@ class model_show(BaseModel):
 
     @staticmethod
     def show_cells():
+        print("Connecting to %s:%d"%(hostname, port))
         shell = Kuori(hostname, port)
         shell.list()
         return ""
@@ -77,7 +79,14 @@ class Root(BaseModel):
         prompt = "kuori@%s:%d> "%(hostname, port)
         intro = "Kuori Remote Command Shell"
 
+def main(host:str, portnum:int):
+    global hostname
+    hostname = host
+    global port
+    port = portnum
 
-if __name__ == "__main__":
     shell = App(Root)
     shell.start()
+
+if __name__ == "__main__":
+    typer.run(main)
