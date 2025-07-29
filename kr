@@ -12,20 +12,32 @@ class model_show(BaseModel):
         description="Show software version",
         json_schema_extra={"function": "show_version"},
     )
-    habitat: Any = Field(
+    cells: Any = Field(
         None,
-        description="Show status of habitat",
-        json_schema_extra={"function": "show_habitat"},
+        description="Show status of all cells in the habitat",
+        json_schema_extra={"function": "show_cells"},
     )
+    config: Any = Field(
+        None,
+        description="Show habitat configuration as XML",
+        json_schema_extra={"function": "show_config"},
+    )
+    
 
     @staticmethod
     def show_version():
         return "0.1.0"
 
     @staticmethod
-    def show_habitat():
+    def show_cells():
         shell = Kuori(hostname, port)
         shell.list()
+        return ""
+    
+    @staticmethod
+    def show_config():
+        shell = Kuori(hostname, port)
+        shell.print_config()
         return ""
 
 class model_launch(BaseModel):
@@ -35,9 +47,11 @@ class model_launch(BaseModel):
     def run(**kwargs):
         if type(kwargs['cells']) is list:
             for xml in kwargs['cells']:
-                print(xml)
+                shell = Kuori(hostname, port)
+                shell.launch(xml)
         else:
-            return kwargs['cells']
+            shell = Kuori(hostname, port)
+            shell.launch(kwargs["cells"])
         
 class model_kill(BaseModel):
     cells: Union[StrictStr, List[StrictStr]] = Field(..., description="Cells to destroy", required=True)
