@@ -71,7 +71,7 @@ class model_kill(BaseModel):
             shell.kill(cells)
 
 class Root(BaseModel):
-    show: model_show = Field(None, description="Show commands")
+    show: model_show = Field(None, description="Show various system information")
     launch: model_launch = Field(None, description="Launch new cells")
     kill: model_kill = Field(None, description="Destroy cells")
 
